@@ -1,0 +1,9 @@
+opencv-python
+numpy
+requests
+python-dotenv
+playwright
+rapidfuzz
+SpeechRecognition
+PyAudio
+streamlit

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PENSION-MITRA | Digital Life Certificate</title>
+    <style>
+        :root { --primary: #2c3e50; --accent: #e67e22; --success: #27ae60; --bg: #f0f2f5; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        
+        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 450px; border-top: 8px solid var(--accent); position: relative; }
+        .header { text-align: center; margin-bottom: 25px; }
+        .header h1 { font-size: 24px; color: var(--primary); margin: 5px 0; }
+        .badge { background: #ffeaa7; color: #d35400; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+        
+        .form-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; color: var(--primary); font-size: 14px; }
+        input { width: 100%; padding: 12px; border: 2px solid #dfe6e9; border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: 0.3s; background: #fdfdfd; }
+        input:focus { border-color: var(--accent); outline: none; }
+        
+        .btn { background: var(--accent); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn:hover { background: #d35400; }
+        .btn:disabled { background: #bdc3c7; cursor: not-allowed; }
+
+        /* BIOMETRIC SCANNER UI */
+        #biometric-ui { display: none; margin-top: 20px; border-radius: 12px; overflow: hidden; border: 4px solid var(--accent); position: relative; background: #000; }
+        #video { width: 100%; display: block; transform: scaleX(-1); } /* Mirror effect */
+        
+        .scan-line { position: absolute; width: 100%; height: 3px; background: var(--accent); top: 0; left: 0; animation: scan 2.5s infinite linear; box-shadow: 0 0 15px var(--accent); z-index: 5; }
+        @keyframes scan { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+
+        .scan-status { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: white; padding: 10px; font-size: 14px; font-weight: bold; text-align: center; z-index: 10; }
+        
+        #success-screen { display: none; text-align: center; padding: 20px; }
+        .success-icon { font-size: 60px; color: var(--success); margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="main-portal">
+        <div class="header">
+            <span class="badge">Sandbox Environment</span>
+            <h1>Jeevan Pramaan</h1>
+            <p style="color: #636e72; font-size: 14px;">Government of India - Life Certificate Portal</p>
+        </div>
+
+        <div class="form-group">
+            <label for="aadhaar_input">Aadhaar Number</label>
+            <input type="text" id="aadhaar_input" placeholder="XXXX-XXXX-9988" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="ppo_input">PPO Number</label>
+            <input type="text" id="ppo_input" placeholder="Extracted PPO">
+        </div>
+
+        <div class="form-group">
+            <label for="dob_input">Date of Birth</label>
+            <input type="text" id="dob_input" placeholder="DD/MM/YYYY">
+        </div>
+
+        <button id="submit_btn" class="btn" onclick="startBiometric()">INITIATE FACE AUTHENTICATION</button>
+
+        <div id="biometric-ui">
+            <div class="scan-line"></div>
+            <video id="video" autoplay playsinline></video>
+            <div id="status-text" class="scan-status">INITIALIZING BIOMETRIC SCAN...</div>
+        </div>
+    </div>
+
+    <div id="success-screen">
+        <div class="success-icon">✔</div>
+        <h2 style="color: var(--primary);">Authentication Successful</h2>
+        <p style="color: #636e72;">Digital Life Certificate (DLC) has been generated for the year 2026.</p>
+        <p style="font-weight: bold; color: var(--success);">Pramaan ID: 9920 4410 8821</p>
+    </div>
+</div>
+
+<script>
+    async function startBiometric() {
+        const btn = document.getElementById('submit_btn');
+        const ui = document.getElementById('biometric-ui');
+        const status = document.getElementById('status-text');
+        
+        btn.disabled = true;
+        btn.innerText = "AUTHENTICATING...";
+
+        try {
+            // Requesting webcam access
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            const video = document.getElementById('video');
+            video.srcObject = stream;
+            ui.style.display = 'block';
+
+            // Stage 1: Sensing Phase
+            setTimeout(() => {
+                status.innerText = "LIVENESS DETECTED. PLEASE BLINK...";
+                status.style.color = "#e67e22";
+            }, 3000);
+
+            // Stage 2: Success Phase
+            setTimeout(() => {
+                status.innerText = "IDENTITY VERIFIED. GENERATING DLC...";
+                status.style.color = "#27ae60";
+
+                setTimeout(() => {
+                    // Stop the camera
+                    stream.getTracks().forEach(track => track.stop());
+                    // Show Success Screen
+                    document.getElementById('main-portal').style.display = 'none';
+                    document.getElementById('success-screen').style.display = 'block';
+                }, 2000);
+
+            }, 7000); // 7 seconds total for the demo feel
+
+        } catch (err) {
+            console.error(err);
+            alert("Biometric Error: Cannot access webcam. Ensure Playwright permissions are granted.");
+        }
+    }
+</script>
+
+</body>
+</html>
