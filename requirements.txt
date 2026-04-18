@@ -1,9 +1,7 @@
-opencv-python
-numpy
-requests
-python-dotenv
-playwright
-rapidfuzz
-SpeechRecognition
-PyAudio
 streamlit
+requests
+rapidfuzz
+python-dotenv
+gTTS
+opencv-python-headless
+playwright
